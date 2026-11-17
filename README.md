@@ -3,8 +3,9 @@
 **שירות · שימור · גיוס.** ערכת עבודה לרכזי גיוס ולנציגי המוקד הטלפוני של כללית במחוז שרון-שומרון.
 
 - **כתובת האתר (לנציגים):** https://shush-plus.vercel.app
+- **כתובת חלופית (GitHub Pages):** https://gadiheiman.github.io/shush-plus/
 - **גרסת העבודה ב-Claude:** https://claude.ai/artifact/19L2YBSF3FmHSyD8xPo4nW (מזהה `0129acf8-47ac-4408-a633-ede3203ff56b`)
-- **קוד המקור:** https://github.com/gadiheiman/shush-plus (מאגר פרטי)
+- **קוד המקור:** https://github.com/gadiheiman/shush-plus (מאגר ציבורי)
 - **עודכן לאחרונה:** 16.11.2026
 - **שימוש:** פנימי בלבד. לפני שמציגים למבוטח תורים, שעות פתיחה או מחירים, יש לאמת אותם במערכות כללית.
 
@@ -159,7 +160,7 @@ js/main.js              הפעלה
 |---|---|
 | **כתובת** | https://shush-plus.vercel.app |
 | **פרויקט Vercel** | `shush-plus` (`prj_pb5MSdWSq84f9hN5qLdHw9OlOna6`) |
-| **מקור** | המאגר `gadiheiman/shush-plus`, ענף `main`. כל דחיפה לענף מפרסמת את האתר מחדש אוטומטית |
+| **מקור** | המאגר `gadiheiman/shush-plus`, ענף `main`. כל דחיפה לענף מפרסמת מחדש אוטומטית את שתי הכתובות: Vercel ו-GitHub Pages (https://gadiheiman.github.io/shush-plus/, מהשורש של `main`, עם `.nojekyll`) |
 | **בנייה** | אין: אתר סטטי (Application Preset: Other) |
 | **גישה** | פתוח לכל מי שיש לו את הכתובת, בלי התחברות. מנועי חיפוש חסומים (`robots.txt`, `X-Robots-Tag`, תגית meta) |
 | **הגדרות** | `vercel.json`: כתובות נקיות, חסימת אינדוקס, בלי מטמון ארוך כדי שעדכונים יופיעו מיד |
@@ -205,3 +206,4 @@ js/main.js              הפעלה
 | 16.11 | בדיקה מקיפה ותיקונים: מיקום ל-4 יישובים, הסתרת חלונות מעבר שעברו, נגישות |
 | 16.11 | שיוך למרפאה בנייד: טופס נקי, פס כתובת אחרי חיפוש, כרטיסי תוצאה קומפקטיים, תיקון גלישה לרוחב |
 | 17.11 | אתר משלה ב-Vercel: https://shush-plus.vercel.app |
+| 17.11 | המאגר הפך לציבורי, וכתובת חלופית ב-GitHub Pages: https://gadiheiman.github.io/shush-plus/ |
