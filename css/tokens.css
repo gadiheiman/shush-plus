@@ -1,0 +1,52 @@
+/* tokens.css – פלטת צבעים, טיפוגרפיה ומרווחים.
+   רעיון הפריסה: מסגרת כחולה-עמוקה של כללית, וכל מסך מקבל צבע הדגשה משלו (--view-accent). */
+:root {
+  --bg: #eef3fa;
+  --surface: #ffffff;
+  --surface-2: #f6f9fd;
+  --ink-text: #0e1c38;
+  --muted: #56658a;
+  --line: #d8e1ee;
+
+  --blue: #0b5ed7;
+  --teal: #0aa39a;
+  --coral: #f2643d;
+  --violet: #6d4cf0;
+  --sun: #f0a500;
+  --mint: #12a86b;
+  --pink: #d63c86;
+  --ink: #1d2c55;
+
+  --hot: #e0412f;
+  --warm: #f0a500;
+  --cool: #8ea2c4;
+
+  --view-accent: var(--blue);
+  --on-accent: #ffffff;
+
+  --f-display: "Secular One", "Rubik", "Arial Hebrew", sans-serif;
+  --f-body: "Rubik", "Segoe UI", "Arial Hebrew", Arial, sans-serif;
+
+  --r: 16px;
+  --r-sm: 10px;
+  --shadow: 0 1px 2px rgba(14, 28, 56, .06), 0 8px 24px -12px rgba(14, 28, 56, .18);
+  --gap: 16px;
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b1222; --surface: #121c33; --surface-2: #17233f; --ink-text: #e8eefb; --muted: #a2b1d1; --line: #26365a;
+    --blue: #5b9bff; --teal: #2fd0c3; --coral: #ff8a66; --violet: #9d86ff; --sun: #ffc23d; --mint: #3ad597; --pink: #ff6fb0; --ink: #9fb4e8;
+    --cool: #51638a; --on-accent: #0b1222;
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 10px 28px -14px rgba(0, 0, 0, .6);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0b1222; --surface: #121c33; --surface-2: #17233f; --ink-text: #e8eefb; --muted: #a2b1d1; --line: #26365a;
+  --blue: #5b9bff; --teal: #2fd0c3; --coral: #ff8a66; --violet: #9d86ff; --sun: #ffc23d; --mint: #3ad597; --pink: #ff6fb0; --ink: #9fb4e8;
+  --cool: #51638a; --on-accent: #0b1222;
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 10px 28px -14px rgba(0, 0, 0, .6);
+  color-scheme: dark;
+}

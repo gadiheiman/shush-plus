@@ -1,0 +1,28 @@
+/* מקורות – כל נתון באפליקציה מפנה למזהה מכאן */
+window.SOURCES = {
+  btl25:   { t: 'ביטוח לאומי – חברות בקופות החולים 2025 (מרץ 2026)', u: 'https://www.btl.gov.il/Publications/survey/Documents/pirsumhaverut2025.pdf' },
+  btlMove: { t: 'ביטוח לאומי – סיכום מעברים בין הקופות 2025 (מפתח הקפיטציה 11/2025)', u: 'https://www.btl.gov.il/Mediniyut/Situation/haveruth1/2025/Documents/capitatia_112025.doc' },
+  biz:     { t: 'ביזפורטל – "כללית 2026": בתי חולים, מרפאות, בתי מרקחת ותעריף מושלם (1.8.2026)', u: 'https://www.bizportal.co.il/guides/news/article/20039143' },
+  bizFam:  { t: 'ביזפורטל – כמה עולה שב"ן למשפחה של 4 בכל קופה', u: 'https://www.bizportal.co.il/guides/news/article/20039153' },
+  bizMac:  { t: 'ביזפורטל – "מכבי 2026": תעריף זהב ושלי (1.8.2026)', u: 'https://www.bizportal.co.il/guides/news/article/20039144' },
+  bizMeu:  { t: 'ביזפורטל – "מאוחדת 2026": תעריף עדיף (7/2026)', u: 'https://www.bizportal.co.il/guides/news/article/20039145' },
+  kamaze:  { t: 'כמה זה – מחירון ביטוחים משלימים (ילד רביעי בפלטינום ללא תשלום)', u: 'https://www.kamaze.co.il/Health/Reviews/14651/Health-Fund-Transition/price-list' },
+  meir:    { t: 'JDN – בתי החולים של כללית מובילים את הסקר הלאומי לחוויית המטופל (תשפ"ה)', u: 'https://www.jdn.co.il/health/2513590/' },
+  next:    { t: 'JDN – כללית NEXT: רפואה מרחוק עד הבית', u: 'https://www.jdn.co.il/health/2681163/' },
+  eyes:    { t: 'בחדרי חרדים – כללית משיקה רופאי עיניים אונליין, מענה בתוך שעתיים (25.8.2026)', u: 'https://www.bhol.co.il/news/1732489' },
+  complaints: { t: 'ישראל היום – דוח נציבות הקבילות: קבילות מוצדקות לכל 10,000 מבוטחים (2025)', u: 'https://www.israelhayom.co.il/health/article/21686191' },
+  mapMac:  { t: 'מיפוי מכבי במחוז – ספר השירות של מכבי, 15.11.2026', u: 'https://claude.ai/artifact/UANjt1xcurqmHftRVsMJ9S' },
+  mapMeu:  { t: 'מיפוי מאוחדת במחוז – אתר מאוחדת, 29.10–15.11.2026', u: 'https://claude.ai/artifact/Y8GRJrshHDDFmgmh4YGziD' },
+  mapLeu:  { t: 'מיפוי לאומית במחוז – אתר לאומית, 29.10–15.11.2026', u: 'https://claude.ai/artifact/SaW5vEKj94ya8k4YQLhRhg' },
+  clalitNear: { t: 'כללית קרובה אליי – מאגר יחידות כללית (nearme.clalit.co.il), נאסף 16.11.2026', u: 'https://nearme.clalit.co.il/' },
+  osm:     { t: 'OpenStreetMap – מיקומי רחובות ומספרי בתים (Geofabrik, 15.11.2026)', u: 'https://download.geofabrik.de/asia/israel-and-palestine.html' },
+  streets: { t: 'רשימת יישובים ורחובות בישראל (05/2026)', u: 'https://github.com/GabMic/israeli-cities-and-streets-list' },
+  mako:    { t: 'mako – 7 טקטיקות לטיפול בהתנגדויות מכירה', u: 'https://www.mako.co.il/finances-personal/career/Article-7f210ffa1421f11006.htm' },
+  aha:     { t: 'AhaSlides – איך להתמודד עם לקוחות קשים: 12 תסריטים לצוות (11/2026)', u: 'https://ahaslides.com/iw/blog/how-to-handle-difficult-customers/' },
+  btlMove2:{ t: 'ביטוח לאומי – מעבר בין קופות חולים וביטול מעבר', u: 'https://www.btl.gov.il/insurance/health_insurance/rishumkupot/pages/maaverkupot.aspx' },
+  bizTier: { t: 'ביזפורטל – שאלות ותשובות על הביטוח המשלים: אכשרה, מעבר קופה ותביעות', u: 'https://www.bizportal.co.il/guides/news/article/20039595' },
+  kamazeMv:{ t: 'כמה זה – מעבר קופה: הרצף הביטוחי נשמר והמידע הרפואי עובר', u: 'https://www.kamaze.co.il/health/Reviews/14933/Health-Fund-Transition/Changing-Health-Fund-Transition' },
+  accenture: { t: 'Accenture – נאמנות מבוטחים בביטוח בריאות: קלות השימוש מכפילה את השימור (2023)', u: 'https://ACCENTURE.com/content/dam/accenture/final/accenture-com/document-2/Health-Payer-Loyalty-Accenture.pdf' },
+  whatsapp:{ t: 'JDN – כללית משיקה מענה מרפאתי בווטסאפ (050-2602700)', u: 'https://www.jdn.co.il/?p=1996437' },
+  kz:      { t: 'כל זכות – מעבר בין קופות חולים', u: 'https://www.kolzchut.org.il/he/%D7%9E%D7%A2%D7%91%D7%A8_%D7%91%D7%99%D7%9F_%D7%A7%D7%95%D7%A4%D7%95%D7%AA_%D7%97%D7%95%D7%9C%D7%99%D7%9D' }
+};
