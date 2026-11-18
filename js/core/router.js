@@ -21,6 +21,7 @@
     v.render(host);
     document.querySelectorAll('[data-nav]').forEach((a) => a.setAttribute('aria-current', a.dataset.nav === v.id ? 'page' : 'false'));
     host.focus({ preventScroll: true });
+    Analytics.page(v.id, v.title);
   }
 
   /** מעבר יזום למסך */

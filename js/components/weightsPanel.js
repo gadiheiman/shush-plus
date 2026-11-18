@@ -26,11 +26,12 @@
       vals[k] = h('output', { class: 'w-val', for: id });
       sliders[k] = h('input', { id, type: 'range', min: '0', max: '100', step: '5', class: 'w-range' });
       sliders[k].addEventListener('input', () => { PrimaryRanker.setWeight(k, +sliders[k].value); sync(); onChange(); });
+      sliders[k].addEventListener('change', () => Analytics.event('weights-change', k));
       return h('div', { class: 'w-row' },
         h('label', { for: id }, `${ICONS[k]} ${PrimaryRanker.LABELS[k]}`), sliders[k], vals[k]);
     });
     const reset = h('button', { type: 'button', class: 'btn btn-ghost btn-sm' }, '↺ חזרה ל-40/40/20');
-    reset.addEventListener('click', () => { PrimaryRanker.reset(); sync(); onChange(); });
+    reset.addEventListener('click', () => { PrimaryRanker.reset(); sync(); onChange(); Analytics.event('weights-reset'); });
     const panel = h('div', { class: 'w-panel', hidden: true }, rows,
       h('div', { class: 'w-foot' }, h('span', { class: 'fine' }, 'הזזת משקל אחד מעדכנת את האחרים, כך שהסכום תמיד 100%.'), reset));
 

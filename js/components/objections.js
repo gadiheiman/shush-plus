@@ -3,14 +3,17 @@
   const { h } = DOM;
 
   /** כרטיס התנגדות */
-  function objCard(o, open) {
+  function objCard(o, open, viewId) {
     const hasAsk = o.ask && o.ask !== '—';
-    return h('details', { class: 'obj', open: open || null },
+    const card = h('details', { class: 'obj', open: open || null },
       h('summary', null, h('span', { class: 'obj-tag' }, o.tag), h('span', { class: 'obj-says' }, `💬 "${o.says}"`)),
       h('div', { class: 'obj-body' },
         h('p', { class: 'obj-ans' }, '✅ ', o.ans),
         hasAsk ? h('p', { class: 'obj-ask' }, h('strong', null, '❓ שאלת המשך: '), o.ask) : null,
         h('div', { class: 'row-gap' }, DOM.copyBtn(hasAsk ? `${o.ans}\n${o.ask}` : o.ans, 'העתקת התשובה'), o.src ? U.srcLink(o.src) : null)));
+    // מדידה: איזו התנגדות נפתחה (רק בפתיחה ידנית)
+    card.addEventListener('toggle', () => { if (card.open) Analytics.event('objection-' + viewId, o.says.slice(0, 60)); });
+    return card;
   }
 
   /** עקרונות השימור: כרטיס קומפקטי מתקפל. במחשב פתוח, בנייד סגור כברירת מחדל */
@@ -45,7 +48,7 @@
         const list = h('div', { class: 'obj-list' });
         const draw = () => {
           const items = filtered();
-          DOM.clear(list).append(...(items.length ? items.map((o) => objCard(o, local.open)) : [h('p', { class: 'empty' }, '🔎 לא נמצאה התנגדות כזו. נסו מילה אחרת.')]));
+          DOM.clear(list).append(...(items.length ? items.map((o) => objCard(o, local.open, cfg.id)) : [h('p', { class: 'empty' }, '🔎 לא נמצאה התנגדות כזו. נסו מילה אחרת.')]));
         };
         const rerender = () => { DOM.clear(el); this.render(el); };
         const tags = ['הכול', ...new Set(cfg.items().map((o) => o.tag))].map((t) => ({ id: t, name: t }));

@@ -2,5 +2,6 @@
 (function () {
   const root = document.getElementById('app');
   const main = Shell.mount(root);
+  Analytics.load();   // מדידת שימוש אנונימית (רק באתר המפורסם)
   Router.start(main);
 })();

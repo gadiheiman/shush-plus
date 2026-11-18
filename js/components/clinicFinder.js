@@ -54,6 +54,7 @@
   /** חלון קופץ: שירותי היחידה, שעות פתיחה, ציון סקר וקישור לאתר כללית */
   function showUnit(u) {
     const F = ClalitData.F, today = new Date().getDay();
+    Analytics.event('unit-open', ClalitData.catName(u));
     const rows = ClalitData.DAYS.map((d, i) => h('tr', { class: i === today ? 'row-now' : '' },
       h('th', null, `יום ${d}`), h('td', null, h('bdi', { dir: 'ltr' }, ClalitData.dayText(u, i)))));
     const svcs = allServices(u);
@@ -83,6 +84,7 @@
   function showDoctors(u, group) {
     const F = ClalitData.F;
     const all = (window.CLALIT_DOCTORS || {})[u[F.code]] || [];
+    Analytics.event('doctors-open', group);
     const isDoc = (f) => (group === 'primary' ? /רפואת משפחה|ילדים/.test(f) : Recommender.isPhysicianField(f));
     const docs = all.filter(([, f]) => isDoc(f));
     const others = all.filter(([, f]) => !isDoc(f));
@@ -296,7 +298,7 @@
       DOM.clear(host).append(
         h('div', { class: 'card-row' }, h('h2', { class: 'card-title' }, '🔍 חיפוש לפי כתובת'), h('span', { class: 'fine f-count-all' }, `${U.num(ClalitData.all().length)} יחידות כללית באזור`)),
         showForm
-          ? form((q) => { st.form = { ...q }; st.query = q; editing = false; draw(); },
+          ? form((q) => { st.form = { ...q }; st.query = q; editing = false; Analytics.event('clinic-search', q.town); draw(); },
               () => { st.form = { town: '', street: '', num: '' }; st.query = null; st.tile = 'primary'; editing = false; draw(); })
           : addressBar(() => { editing = true; draw(); host.querySelector('#cf-town')?.focus(); }),
         out);

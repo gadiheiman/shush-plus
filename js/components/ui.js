@@ -56,7 +56,7 @@
   /** בורר יישוב: השלמה אוטומטית (גם בנייד), חיפוש ואיפוס – מסונכרן עם Store */
   function townPicker(onChange, id = 'town-input') {
     const commit = (v) => {
-      if (TownInsights.findTown(v)) { input.setAttribute('aria-invalid', 'false'); Store.set({ town: v }); onChange && onChange(v); }
+      if (TownInsights.findTown(v)) { input.setAttribute('aria-invalid', 'false'); Store.set({ town: v }); Analytics.event('town-search', v); onChange && onChange(v); }
       else input.setAttribute('aria-invalid', 'true');
     };
     const { form, input } = searchRow({
