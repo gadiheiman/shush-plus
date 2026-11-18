@@ -29,45 +29,83 @@
     return GeoCalc.nearest(p, tile.g, tile.k);
   }
 
-  /** חלון קופץ: שעות פתיחה ופרטי היחידה */
-  function showHours(u) {
+  /** קישור לדף היחידה בספר השירות של כללית */
+  const clalitUrl = (u) => `https://www.clalit.co.il/he/sefersherut/pages/clinicdetails.aspx?ddeptcode=${u[ClalitData.F.code]}`;
+
+  /* אייקון לכל סוג שירות (לפי מילת מפתח) */
+  const SVC_ICONS = [[/משפחה/, '👨‍⚕️'], [/ילדים/, '🧒'], [/נשים|גינקולוג|הריון/, '🤰'], [/מעבדה|דם/, '🧪'], [/סיעוד|אחיות/, '💉'],
+    [/חיסון/, '💉'], [/רוקחות|מרקחת/, '💊'], [/אק"?ג|EKG|לב/, '❤️'], [/תזונה|דיאט/, '🥗'], [/סוכר|גלוקומטר/, '🩸'], [/פיזיותרפיה/, '🦵'],
+    [/סוציאלית|פסיכו|נפש/, '🧠'], [/אונקולוג/, '🎗️'], [/ביקור בית/, '🏠'], [/עיניים|אופטומטר/, '👁️'], [/שיניים/, '🦷'], [/אורתופד/, '🦴'], [/עור/, '🧴']];
+  const svcIcon = (t) => (SVC_ICONS.find(([re]) => re.test(t)) || [0, '✔️'])[1];
+
+  /** כל השירותים ביחידה: מ"כללית קרובה אליי" ומעמוד המרפאה בספר השירות, בלי כפילויות */
+  function allServices(u) {
+    const extra = (window.CLINIC_SERVICES || {})[u[ClalitData.F.code]] || [];
+    return [...new Set([...ClalitData.services(u), ...extra])];
+  }
+
+  /** תג ציון סקר יהלום, בצבע לפי היעד */
+  function surveyTag(v) {
+    const S = window.CLALIT_SURVEY || {};
+    const st = v >= S.target ? 'ok' : v >= S.target - 1.5 ? 'mid' : 'low';
+    return h('span', { class: 'px-tag px-' + st, title: `סקר יהלום, ${S.metric}, ${S.period}. יעד ${S.target}` }, `💎 יהלום ${v.toFixed(1)}`);
+  }
+
+  /** חלון קופץ: שירותי היחידה, שעות פתיחה, ציון סקר וקישור לאתר כללית */
+  function showUnit(u) {
     const F = ClalitData.F, today = new Date().getDay();
     const rows = ClalitData.DAYS.map((d, i) => h('tr', { class: i === today ? 'row-now' : '' },
       h('th', null, `יום ${d}`), h('td', null, h('bdi', { dir: 'ltr' }, ClalitData.dayText(u, i)))));
-    const svcs = ClalitData.services(u);
+    const svcs = allServices(u);
+    const px = PrimaryRanker.survey(u);
     Modal.open(u[F.name],
-      h('p', null, `${ClalitData.catName(u)} · ${u[F.addr]}, ${u[F.city]}`, u[F.phone] ? [' · ☎ ', h('bdi', { dir: 'ltr' }, phone(u[F.phone]))] : null),
+      h('div', { class: 'u-head' },
+        h('p', null, `${ClalitData.catName(u)} · ${u[F.addr]}, ${u[F.city]}`, u[F.phone] ? [' · ☎ ', h('bdi', { dir: 'ltr' }, phone(u[F.phone]))] : null),
+        h('div', { class: 'u-head-act' },
+          px !== null ? surveyTag(px) : null,
+          h('a', { class: 'btn btn-primary btn-sm', href: clalitUrl(u), target: '_blank', rel: 'noopener' }, '🔗 לדף המרפאה באתר כללית'))),
+      h('section', { class: 'svc-box' },
+        h('h3', null, `🩺 שירותים ביחידה (${svcs.length})`),
+        svcs.length
+          ? h('ul', { class: 'svc-grid' }, svcs.map((t) => h('li', null, h('span', { 'aria-hidden': 'true' }, svcIcon(t)), h('span', null, t))))
+          : h('p', { class: 'fine' }, 'אין פירוט שירותים במאגר. אפשר לבדוק בדף המרפאה באתר כללית.')),
+      h('h3', { class: 'sec-sub' }, '🕘 שעות פתיחה'),
       (u[F.hours] || []).length
         ? h('div', { class: 'tbl-wrap' }, h('table', { class: 'tbl' }, h('thead', null, h('tr', null, h('th', null, 'יום'), h('th', null, 'שעות פתיחה'))), h('tbody', null, rows)))
         : h('p', { class: 'fine' }, 'אין שעות פתיחה במאגר של כללית ליחידה הזו. כדאי להתקשר לבדוק.'),
-      svcs.length ? h('p', { class: 'fine' }, 'שירותים: ', svcs.join(' · ')) : null,
-      h('p', { class: 'fine' }, 'מקור: ', U.srcLink('clalitNear', 'כללית קרובה אליי'), '. שעות עשויות להשתנות בחגים.'));
+      h('p', { class: 'fine' }, 'מקור: ', U.srcLink('clalitNear', 'כללית קרובה אליי'), ' וספר השירות של כללית. שעות עשויות להשתנות בחגים.'));
   }
 
   /** שורת תוצאה: שם לחיץ, כתובת, מרחק, נתוני זמינות וכפתורי ניווט.
       בנויה קומפקטית כדי שתיראה טוב גם בנייד */
-  function resultRow({ u, km, docs, hrs }, origin, rec) {
+  function resultRow({ u, km, docs, hrs, drive, px, score }, origin, rec) {
     const F = ClalitData.F;
     const est = GeoCalc.roadEstimate(km);
     const nav = GeoCalc.navLinks(origin, [u[F.lat], u[F.lon]]);
-    const name = h('button', { type: 'button', class: 'unit-name', title: 'שעות פתיחה' }, u[F.name].trim());
-    name.addEventListener('click', () => showHours(u));
+    const name = h('button', { type: 'button', class: 'unit-name', title: 'שירותים ושעות פתיחה' }, u[F.name].trim());
+    name.addEventListener('click', () => showUnit(u));
     const r1 = (x) => U.num(Math.round(x * 10) / 10);
-    // נתונים קצרים: נסיעה, רופאים, שעות פתיחה
+    // נסיעה: מסלול אמיתי אם חושב, אחרת הערכה (~)
+    const driveTxt = drive ? `🚗 ${r1(drive.km)} ק"מ · ${drive.min} דק׳` : `🚗 ~${est.min} דק׳ נסיעה`;
     const facts = [
-      `🚗 ${est.min} דק׳ נסיעה`,
-      docs ? `👩‍⚕️ ${docs} רופאים` : null,
-      hrs ? `🕘 ${U.num(Math.round(hrs))} ש׳ בשבוע` : null
+      h('span', null, driveTxt),
+      px !== undefined && px !== null ? surveyTag(px) : null,
+      docs ? h('span', null, `👩‍⚕️ ${docs} רופאים`) : null,
+      hrs ? h('span', null, `🕘 ${U.num(Math.round(hrs))} ש׳ בשבוע`) : null
     ].filter(Boolean);
     const navBtn = (href, ic, label, primary) => h('a', { class: `nav-btn ${primary ? 'nav-btn-main' : ''}`, href, target: '_blank', rel: 'noopener', 'aria-label': label },
       h('span', { 'aria-hidden': 'true' }, ic), h('span', null, label));
+    const site = h('a', { class: 'site-link', href: clalitUrl(u), target: '_blank', rel: 'noopener', 'aria-label': 'דף המרפאה באתר כללית', title: 'דף המרפאה באתר כללית' }, '🔗');
     return h('article', { class: `unit ${rec ? 'unit-rec' : ''}` },
       h('div', { class: 'unit-top' },
-        h('div', { class: 'unit-id' }, rec ? h('span', { class: 'rec-badge', title: rec }, '⭐ מומלצת') : null, name,
+        h('div', { class: 'unit-id' },
+          h('div', { class: 'unit-badges' }, rec ? h('span', { class: 'rec-badge', title: rec }, '⭐ מומלצת') : null,
+            score !== undefined ? h('span', { class: 'score-badge', title: 'ציון משוקלל לפי המשקלים שלמעלה' }, `🏅 ${score}`) : null),
+          h('div', { class: 'unit-name-row' }, name, site),
           h('p', { class: 'fine' }, `${u[F.addr]}, ${u[F.city]}`),
           u[F.phone] ? h('a', { class: 'unit-phone', href: 'tel:' + phone(u[F.phone]).replace(/\D/g, '') }, '☎ ', h('bdi', { dir: 'ltr' }, phone(u[F.phone]))) : null),
         h('div', { class: 'unit-dist', title: 'מרחק אווירי' }, h('b', null, r1(km)), h('span', null, 'ק"מ'))),
-      h('div', { class: 'unit-facts' }, facts.map((f) => h('span', null, f))),
+      h('div', { class: 'unit-facts' }, facts),
       h('div', { class: 'unit-nav' },
         navBtn(nav.drive, '🚗', 'נסיעה', true), navBtn(nav.transit, '🚌', 'תח״צ'), navBtn(nav.walk, '🚶', 'הליכה'), navBtn(nav.waze, '🧭', 'Waze')));
   }
@@ -78,6 +116,35 @@
     const { list, best } = Recommender.rank(cur.res, cur.t.g);
     const ordered = best ? [best, ...list.filter((x) => x.u !== best.u)] : list;
     return ordered.map((x) => resultRow(x, origin, best && x.u === best.u ? Recommender.why(x, cur.t.g) : null));
+  }
+
+  /* מרפאות ראשוניות: כמה מועמדות נבדקות בשקלול, וכמה מוצגות */
+  const PRIMARY_POOL = 10;
+  const PRIMARY_SHOW = 5;
+
+  /**
+   * רשימת המרפאות הראשוניות לפי המשקלים: מרחק אווירי, מרחק נסיעה וסקר יהלום.
+   * מוצגת מיד עם הערכת נסיעה, ומתעדכנת כשמגיעים מרחקי המסלול האמיתיים.
+   */
+  function primaryList(p, origin) {
+    const pool = GeoCalc.nearest(p, 'primary', PRIMARY_POOL).map((x) => ({ ...x, hrs: Recommender.weeklyHours(x.u), docs: Recommender.doctors(x.u, 'primary') }));
+    if (!pool.length) return h('p', { class: 'empty' }, 'לא נמצאו מרפאות ראשוניות באזור.');
+    const list = h('div', { class: 'unit-grid' });
+    const status = h('p', { class: 'fine route-status' }, '🚗 מחשב מרחקי נסיעה בכביש…');
+    let drives = null;
+    const draw = () => {
+      const ranked = PrimaryRanker.rank(pool.map((x, i) => ({ ...x, drive: drives && drives[i] ? drives[i] : null })));
+      DOM.clear(list).append(...ranked.slice(0, PRIMARY_SHOW).map((r, i) => resultRow(r, origin, i === 0 ? PrimaryRanker.why(r) : null)));
+    };
+    draw();
+    Routing.drive(p, pool.map((x) => [x.u[ClalitData.F.lat], x.u[ClalitData.F.lon]])).then((res) => {
+      if (res && res.some(Boolean)) { drives = res; status.textContent = '🚗 מרחק הנסיעה מחושב לפי מסלול בכביש (OpenStreetMap).'; }
+      else status.textContent = '🚗 שירות המסלולים לא זמין כרגע, ולכן מרחק הנסיעה הוא הערכה: מרחק אווירי × 1.3.';
+      draw();
+    });
+    return h('div', { class: 'primary-res' }, WeightsPanel.render(draw), status, list,
+      h('p', { class: 'fine' }, `💎 סקר יהלום: מדד "${window.CLALIT_SURVEY.metric}", ${window.CLALIT_SURVEY.period}. מרפאה בלי נתון סקר מקבלת ציון ממוצע. נבדקות ${PRIMARY_POOL} המרפאות הקרובות, ומוצגות ${PRIMARY_SHOW} עם הציון המשוקלל הגבוה. מקורות: `,
+        U.srcLink('yahalom', 'סקר יהלום'), ' · ', U.srcLink('osrm', 'OSRM')));
   }
 
   /** אזור התוצאות: ריבועים + רשימת הריבוע הנבחר */
@@ -101,9 +168,9 @@
 
     return h('div', { class: 'finder-res' },
       tiles,
-      h('h3', { class: 'sec-sub' }, `${cur.t.icon} ${cur.t.name} · ${cur.res.length} הקרובים`),
-      rankedList(cur, origin),
-      h('details', { class: 'f-note' }, h('summary', null, 'ℹ️ איך נבחרת המומלצת ומאיפה הנתונים'), h('p', { class: 'fine' }, '⭐ ההמלצה מבוססת על מרחק, מספר הרופאים ביחידה ושעות הפתיחה בשבוע. אין מקור ציבורי לאורך תור או לעומס בכל מרפאה, ולכן זו המלצה לפי זמינות. לחיצה על שם היחידה מציגה את שעות הפתיחה. מרחק בכביש וזמן נסיעה הם הערכה; למסלול מדויק ולתחבורה ציבורית – כפתורי הניווט. מקורות: ',
+      h('h3', { class: 'sec-sub' }, cur.t.g === 'primary' ? `${cur.t.icon} ${cur.t.name} · ${PRIMARY_SHOW} המובילות בשקלול` : `${cur.t.icon} ${cur.t.name} · ${cur.res.length} הקרובים`),
+      cur.t.g === 'primary' ? primaryList(loc.p, origin) : rankedList(cur, origin),
+      h('details', { class: 'f-note' }, h('summary', null, 'ℹ️ איך נבחרת המומלצת ומאיפה הנתונים'), h('p', { class: 'fine' }, '⭐ במרפאות ראשוניות הסדר נקבע לפי המשקלים שמעל הרשימה. בשאר הסוגים ההמלצה מבוססת על מרחק, מספר הרופאים ביחידה ושעות הפתיחה בשבוע. אין מקור ציבורי לאורך תור או לעומס בכל מרפאה, ולכן זו המלצה לפי זמינות. לחיצה על שם היחידה מציגה את שעות הפתיחה. מרחק בכביש וזמן נסיעה הם הערכה; למסלול מדויק ולתחבורה ציבורית – כפתורי הניווט. מקורות: ',
         U.srcLink('clalitNear', 'כללית קרובה אליי'), ' · ', U.srcLink('osm', 'OpenStreetMap'))));
   }
 
@@ -192,5 +259,5 @@
     draw();
   }
 
-  window.ClinicFinder = { mount, showHours, phone };
+  window.ClinicFinder = { mount, showHours: showUnit, showUnit, phone };
 })();

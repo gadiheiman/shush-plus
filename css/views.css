@@ -346,3 +346,40 @@ html, body { overflow-x: clip; }
   .unit-facts span { font-size: 12px; padding: 2px 8px; }
 }
 .finder-form .input { min-width: 0; width: 100%; box-sizing: border-box; }
+
+/* ---- דירוג מרפאות ראשוניות: משקלים ---- */
+.primary-res { display: grid; gap: 10px; }
+.w-box { border: 1px solid color-mix(in srgb, var(--violet) 30%, var(--line)); background: color-mix(in srgb, var(--violet) 6%, var(--surface)); border-radius: 14px; padding: 10px 12px; display: grid; gap: 8px; }
+.w-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.w-head > div { display: grid; gap: 2px; min-width: 0; }
+.w-sum { font-size: 13px; color: var(--muted); }
+.w-panel { display: grid; gap: 8px; padding-top: 6px; border-top: 1px dashed var(--line); }
+.w-panel[hidden] { display: none; }
+.w-row { display: grid; grid-template-columns: 9.5em minmax(0, 1fr) 3em; gap: 8px; align-items: center; font-size: 14px; }
+.w-range { width: 100%; accent-color: var(--violet); min-height: 32px; }
+.w-val { font-weight: 800; text-align: left; font-variant-numeric: tabular-nums; }
+.w-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; }
+.route-status { margin: 0; }
+.score-badge { padding: 2px 10px; border-radius: 99px; background: color-mix(in srgb, var(--violet) 14%, var(--surface)); color: var(--violet); font-size: 12.5px; font-weight: 800; }
+.unit-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+.unit-badges:empty { display: none; }
+.unit-name-row { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.site-link { flex: 0 0 auto; display: inline-grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; border: 1px solid var(--line); background: var(--surface); text-decoration: none; font-size: 15px; }
+.site-link:hover { border-color: var(--teal); }
+.px-tag { padding: 3px 10px; border-radius: 99px; font-size: 13px; font-weight: 700; white-space: nowrap; border: 1px solid transparent; }
+.px-ok { background: color-mix(in srgb, var(--mint) 16%, var(--surface)); color: color-mix(in srgb, var(--mint) 70%, var(--ink-text)); border-color: color-mix(in srgb, var(--mint) 35%, transparent); }
+.px-mid { background: color-mix(in srgb, var(--sun) 22%, var(--surface)); color: color-mix(in srgb, var(--warm) 70%, var(--ink-text)); }
+.px-low { background: color-mix(in srgb, var(--coral) 14%, var(--surface)); color: color-mix(in srgb, var(--coral) 75%, var(--ink-text)); }
+/* חלון היחידה: שירותים בולטים */
+.u-head { display: grid; gap: 8px; }
+.u-head p { margin: 0; }
+.u-head-act { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.svc-box { border-radius: 14px; padding: 12px; background: color-mix(in srgb, var(--teal) 8%, var(--surface)); border: 1px solid color-mix(in srgb, var(--teal) 30%, var(--line)); }
+.svc-box h3 { margin: 0 0 8px; font-size: 16px; }
+.svc-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 6px; }
+.svc-grid li { display: flex; gap: 8px; align-items: center; padding: 7px 10px; border-radius: 10px; background: var(--surface); border: 1px solid var(--line); font-size: 14px; font-weight: 600; line-height: 1.3; }
+@media (max-width: 700px) {
+  .w-row { grid-template-columns: 7.5em minmax(0, 1fr) 2.6em; font-size: 13px; }
+  .svc-grid { grid-template-columns: 1fr 1fr; }
+  .svc-grid li { font-size: 13px; padding: 6px 8px; }
+}

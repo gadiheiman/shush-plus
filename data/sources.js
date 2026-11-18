@@ -24,5 +24,7 @@ window.SOURCES = {
   kamazeMv:{ t: 'כמה זה – מעבר קופה: הרצף הביטוחי נשמר והמידע הרפואי עובר', u: 'https://www.kamaze.co.il/health/Reviews/14933/Health-Fund-Transition/Changing-Health-Fund-Transition' },
   accenture: { t: 'Accenture – נאמנות מבוטחים בביטוח בריאות: קלות השימוש מכפילה את השימור (2023)', u: 'https://ACCENTURE.com/content/dam/accenture/final/accenture-com/document-2/Health-Payer-Loyalty-Accenture.pdf' },
   whatsapp:{ t: 'JDN – כללית משיקה מענה מרפאתי בווטסאפ (050-2602700)', u: 'https://www.jdn.co.il/?p=1996437' },
+  yahalom: { t: 'סקר יהלום – מדד "כל השאלות", מצטבר ינואר–אוקטובר 2026 (אפליקציית ניתוח מרפאות מחוז שו״ש)', u: 'https://claude.ai/artifact/SCLrYKAWFzHcTwv6KQ3Yju' },
+  osrm:    { t: 'OSRM – מרחקי נסיעה בכביש לפי OpenStreetMap', u: 'https://project-osrm.org/' },
   kz:      { t: 'כל זכות – מעבר בין קופות חולים', u: 'https://www.kolzchut.org.il/he/%D7%9E%D7%A2%D7%91%D7%A8_%D7%91%D7%99%D7%9F_%D7%A7%D7%95%D7%A4%D7%95%D7%AA_%D7%97%D7%95%D7%9C%D7%99%D7%9D' }
 };
