@@ -158,12 +158,10 @@
         navBtn(nav.drive, '🚗', 'נסיעה', true), navBtn(nav.transit, '🚌', 'תח״צ'), navBtn(nav.walk, '🚶', 'הליכה'), navBtn(nav.waze, '🧭', 'Waze')));
   }
 
-  /** רשימה מדורגת: המומלצת ראשונה, ואחריה השאר לפי מרחק */
-  function rankedList(cur, origin) {
+  /** רשימה לשאר סוגי היחידות: לפי מרחק בלבד, בלי ציון ובלי המלצה */
+  function nearestList(cur, origin) {
     if (!cur.res.length) return h('p', { class: 'empty' }, 'לא נמצאו יחידות מהסוג הזה באזור.');
-    const { list, best } = Recommender.rank(cur.res, cur.t.g);
-    const ordered = best ? [best, ...list.filter((x) => x.u !== best.u)] : list;
-    return ordered.map((x) => resultRow(x, origin, best && x.u === best.u ? Recommender.why(x, cur.t.g) : null, cur.t.g));
+    return cur.res.map((x) => resultRow({ ...x, docs: Recommender.doctors(x.u, cur.t.g) }, origin, null, cur.t.g));
   }
 
   /* מרפאות ראשוניות: כמה מועמדות נבדקות בשקלול, וכמה מוצגות */
@@ -175,7 +173,7 @@
    * מוצגת מיד עם הערכת נסיעה, ומתעדכנת כשמגיעים מרחקי המסלול האמיתיים.
    */
   function primaryList(p, origin) {
-    const pool = GeoCalc.nearest(p, 'primary', PRIMARY_POOL).map((x) => ({ ...x, hrs: Recommender.weeklyHours(x.u), docs: Recommender.doctors(x.u, 'primary') }));
+    const pool = GeoCalc.nearest(p, 'primary', PRIMARY_POOL).map((x) => ({ ...x, docs: Recommender.doctors(x.u, 'primary') }));
     if (!pool.length) return h('p', { class: 'empty' }, 'לא נמצאו מרפאות ראשוניות באזור.');
     const list = h('div', { class: 'unit-grid' });
     const status = h('p', { class: 'fine route-status' }, '🚗 מחשב מרחקי נסיעה בכביש…');
@@ -217,8 +215,8 @@
     return h('div', { class: 'finder-res' },
       tiles,
       h('h3', { class: 'sec-sub' }, cur.t.g === 'primary' ? `${cur.t.icon} ${cur.t.name} · ${PRIMARY_SHOW} המובילות בשקלול` : `${cur.t.icon} ${cur.t.name} · ${cur.res.length} הקרובים`),
-      cur.t.g === 'primary' ? primaryList(loc.p, origin) : rankedList(cur, origin),
-      h('details', { class: 'f-note' }, h('summary', null, 'ℹ️ איך נבחרת המומלצת ומאיפה הנתונים'), h('p', { class: 'fine' }, '⭐ במרפאות ראשוניות הסדר נקבע לפי המשקלים שמעל הרשימה. בשאר הסוגים ההמלצה מבוססת על מרחק, מספר הרופאים ביחידה ושעות הפתיחה בשבוע. אין מקור ציבורי לאורך תור או לעומס בכל מרפאה, ולכן זו המלצה לפי זמינות. לחיצה על שם היחידה מציגה את שעות הפתיחה. מרחק בכביש וזמן נסיעה הם הערכה; למסלול מדויק ולתחבורה ציבורית – כפתורי הניווט. מקורות: ',
+      cur.t.g === 'primary' ? primaryList(loc.p, origin) : nearestList(cur, origin),
+      h('details', { class: 'f-note' }, h('summary', null, 'ℹ️ איך נבחרת המומלצת ומאיפה הנתונים'), h('p', { class: 'fine' }, '⭐ במרפאות ראשוניות הסדר נקבע לפי ציון ההתאמה, לפי המשקלים שמעל הרשימה. בשאר סוגי היחידות הרשימה מסודרת לפי מרחק אווירי בלבד. לחיצה על שם היחידה מציגה את שעות הפתיחה. מרחק בכביש וזמן נסיעה הם הערכה; למסלול מדויק ולתחבורה ציבורית – כפתורי הניווט. מקורות: ',
         U.srcLink('clalitNear', 'כללית קרובה אליי'), ' · ', U.srcLink('osm', 'OpenStreetMap'))));
   }
 
