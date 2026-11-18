@@ -383,3 +383,15 @@ html, body { overflow-x: clip; }
   .svc-grid { grid-template-columns: 1fr 1fr; }
   .svc-grid li { font-size: 13px; padding: 6px 8px; }
 }
+
+/* תגיות לחיצות בכרטיס: ציון ורופאים */
+button.score-badge { border: 0; cursor: pointer; font: inherit; font-size: 12.5px; font-weight: 800; }
+button.score-badge:hover, .chip-btn:hover { filter: brightness(.95); text-decoration: underline; }
+.chip-btn { padding: 3px 10px; border-radius: 99px; background: color-mix(in srgb, var(--blue) 10%, var(--surface)); border: 1px solid color-mix(in srgb, var(--blue) 30%, var(--line)); color: var(--ink-text); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+@media (max-width: 700px) { .chip-btn { font-size: 12px; padding: 2px 8px; } }
+/* חלון הרופאים */
+.doc-sec h3 { margin: 6px 0; font-size: 16px; }
+.doc-field { margin-bottom: 10px; }
+.doc-list { list-style: none; margin: 4px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 4px 12px; }
+.doc-list li { padding: 4px 0; border-bottom: 1px dashed var(--line); font-size: 14px; }
+.doc-more summary { cursor: pointer; font-weight: 700; color: var(--muted); padding: 6px 0; }

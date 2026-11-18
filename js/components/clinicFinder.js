@@ -76,9 +76,56 @@
       h('p', { class: 'fine' }, 'מקור: ', U.srcLink('clalitNear', 'כללית קרובה אליי'), ' וספר השירות של כללית. שעות עשויות להשתנות בחגים.'));
   }
 
+  /** מה סופר "רופאים" לפי סוג היחידה */
+  const tileLabelDocs = (group) => (group === 'primary' ? 'רופאי משפחה וילדים' : 'רופאים');
+
+  /** חלון: שמות הרופאים במרפאה (מעמוד המרפאה בספר השירות של כללית) */
+  function showDoctors(u, group) {
+    const F = ClalitData.F;
+    const all = (window.CLALIT_DOCTORS || {})[u[F.code]] || [];
+    const isDoc = (f) => (group === 'primary' ? /רפואת משפחה|ילדים/.test(f) : Recommender.isPhysicianField(f));
+    const docs = all.filter(([, f]) => isDoc(f));
+    const others = all.filter(([, f]) => !isDoc(f));
+    // קיבוץ לפי תחום
+    const byField = (list) => Object.entries(list.reduce((m, [n, f]) => ((m[f] = m[f] || []).push(n), m), {}));
+    const section = (title, list) => h('section', { class: 'doc-sec' }, h('h3', null, title),
+      byField(list).map(([f, names]) => h('div', { class: 'doc-field' }, h('b', null, `${f} (${names.length})`),
+        h('ul', { class: 'doc-list' }, names.map((n) => h('li', null, n))))));
+    Modal.open(`👩‍⚕️ הצוות ב${u[F.name]}`,
+      h('p', { class: 'fine' }, group === 'primary'
+        ? 'המספר בכרטיס סופר את רופאי המשפחה ורופאי הילדים שרשומים למרפאה.'
+        : 'המספר בכרטיס סופר את הרופאים שרשומים ליחידה, בלי מקצועות פרא-רפואיים.'),
+      docs.length ? section('רופאים', docs) : h('p', { class: 'empty' }, 'אין רשימת רופאים במאגר.'),
+      others.length ? h('details', { class: 'doc-more' }, h('summary', null, `אנשי צוות נוספים (${others.length})`), section('צוות נוסף', others)) : null,
+      h('p', { class: 'fine' }, 'מקור: ', h('a', { href: clalitUrl(u), target: '_blank', rel: 'noopener' }, 'דף המרפאה בספר השירות של כללית'), '. הרשימה עשויה להשתנות.'));
+  }
+
+  /** תג הציון המשוקלל: לחיצה מסבירה איך חושב */
+  function scoreBtn(r) {
+    const b = h('button', { type: 'button', class: 'score-badge', title: 'ציון התאמה משוקלל – לחצו להסבר' }, `🏅 התאמה ${r.score}/100`);
+    b.addEventListener('click', () => showScore(r));
+    return b;
+  }
+
+  /** חלון: פירוק הציון המשוקלל לפי המשקלים */
+  function showScore(r) {
+    const w = PrimaryRanker.weights();
+    const rows = PrimaryRanker.KEYS.map((k) => {
+      const val = { air: `${U.num(Math.round(r.km * 10) / 10)} ק"מ`, drive: `${U.num(Math.round(r.dKm * 10) / 10)} ק"מ`, survey: r.px !== null ? r.px.toFixed(1) : 'אין נתון (ממוצע)' }[k];
+      const pts = Math.round(r.parts[k] * 100);
+      return h('tr', null, h('th', null, PrimaryRanker.LABELS[k]), h('td', null, val), h('td', null, `${pts}/100`), h('td', null, `${w[k]}%`), h('td', null, h('b', null, U.num(Math.round(r.parts[k] * w[k])))));
+    });
+    Modal.open(`🏅 ציון התאמה: ${r.score}/100`,
+      h('p', null, 'הציון קובע את סדר המרפאות הראשוניות ברשימה. הוא משקלל שלושה רכיבים לפי המשקלים שנבחרו מעל הרשימה. 100 = הכי טובה בכל רכיב מבין המרפאות שנבדקו.'),
+      h('div', { class: 'tbl-wrap' }, h('table', { class: 'tbl' },
+        h('thead', null, h('tr', null, h('th', null, 'רכיב'), h('th', null, 'נתון'), h('th', null, 'ציון'), h('th', null, 'משקל'), h('th', null, 'תרומה'))),
+        h('tbody', null, rows))),
+      h('p', { class: 'fine' }, 'מרחק: הקרובה ביותר מקבלת 100, והאחרות יחסית אליה. סקר יהלום: הגבוה מבין המרפאות שנבדקו מקבל 100 והנמוך 0.'));
+  }
+
   /** שורת תוצאה: שם לחיץ, כתובת, מרחק, נתוני זמינות וכפתורי ניווט.
       בנויה קומפקטית כדי שתיראה טוב גם בנייד */
-  function resultRow({ u, km, docs, hrs, drive, px, score }, origin, rec) {
+  function resultRow({ u, km, docs, drive, px, score, parts, dKm }, origin, rec, group = 'primary') {
     const F = ClalitData.F;
     const est = GeoCalc.roadEstimate(km);
     const nav = GeoCalc.navLinks(origin, [u[F.lat], u[F.lon]]);
@@ -87,12 +134,13 @@
     const r1 = (x) => U.num(Math.round(x * 10) / 10);
     // נסיעה: מסלול אמיתי אם חושב, אחרת הערכה (~)
     const driveTxt = drive ? `🚗 ${r1(drive.km)} ק"מ · ${drive.min} דק׳` : `🚗 ~${est.min} דק׳ נסיעה`;
-    const facts = [
-      h('span', null, driveTxt),
-      px !== undefined && px !== null ? surveyTag(px) : null,
-      docs ? h('span', null, `👩‍⚕️ ${docs} רופאים`) : null,
-      hrs ? h('span', null, `🕘 ${U.num(Math.round(hrs))} ש׳ בשבוע`) : null
-    ].filter(Boolean);
+    // רופאים: לחיצה פותחת את שמות הרופאים במרפאה
+    let docBtn = null;
+    if (docs) {
+      docBtn = h('button', { type: 'button', class: 'chip-btn', title: 'רשימת הרופאים במרפאה' }, `👩‍⚕️ ${docs} ${tileLabelDocs(group)}`);
+      docBtn.addEventListener('click', () => showDoctors(u, group));
+    }
+    const facts = [h('span', null, driveTxt), px !== undefined && px !== null ? surveyTag(px) : null, docBtn].filter(Boolean);
     const navBtn = (href, ic, label, primary) => h('a', { class: `nav-btn ${primary ? 'nav-btn-main' : ''}`, href, target: '_blank', rel: 'noopener', 'aria-label': label },
       h('span', { 'aria-hidden': 'true' }, ic), h('span', null, label));
     const site = h('a', { class: 'site-link', href: clalitUrl(u), target: '_blank', rel: 'noopener', 'aria-label': 'דף המרפאה באתר כללית', title: 'דף המרפאה באתר כללית' }, '🔗');
@@ -100,7 +148,7 @@
       h('div', { class: 'unit-top' },
         h('div', { class: 'unit-id' },
           h('div', { class: 'unit-badges' }, rec ? h('span', { class: 'rec-badge', title: rec }, '⭐ מומלצת') : null,
-            score !== undefined ? h('span', { class: 'score-badge', title: 'ציון משוקלל לפי המשקלים שלמעלה' }, `🏅 ${score}`) : null),
+            score !== undefined ? scoreBtn({ u, km, score, parts, dKm, px }) : null),
           h('div', { class: 'unit-name-row' }, name, site),
           h('p', { class: 'fine' }, `${u[F.addr]}, ${u[F.city]}`),
           u[F.phone] ? h('a', { class: 'unit-phone', href: 'tel:' + phone(u[F.phone]).replace(/\D/g, '') }, '☎ ', h('bdi', { dir: 'ltr' }, phone(u[F.phone]))) : null),
@@ -115,7 +163,7 @@
     if (!cur.res.length) return h('p', { class: 'empty' }, 'לא נמצאו יחידות מהסוג הזה באזור.');
     const { list, best } = Recommender.rank(cur.res, cur.t.g);
     const ordered = best ? [best, ...list.filter((x) => x.u !== best.u)] : list;
-    return ordered.map((x) => resultRow(x, origin, best && x.u === best.u ? Recommender.why(x, cur.t.g) : null));
+    return ordered.map((x) => resultRow(x, origin, best && x.u === best.u ? Recommender.why(x, cur.t.g) : null, cur.t.g));
   }
 
   /* מרפאות ראשוניות: כמה מועמדות נבדקות בשקלול, וכמה מוצגות */
@@ -143,7 +191,7 @@
       draw();
     });
     return h('div', { class: 'primary-res' }, WeightsPanel.render(draw), status, list,
-      h('p', { class: 'fine' }, `💎 סקר יהלום: מדד "${window.CLALIT_SURVEY.metric}", ${window.CLALIT_SURVEY.period}. מרפאה בלי נתון סקר מקבלת ציון ממוצע. נבדקות ${PRIMARY_POOL} המרפאות הקרובות, ומוצגות ${PRIMARY_SHOW} עם הציון המשוקלל הגבוה. מקורות: `,
+      h('p', { class: 'fine' }, `🏅 = ציון התאמה (0–100) לפי המשקלים; לחיצה עליו מסבירה את החישוב. 💎 סקר יהלום: מדד "${window.CLALIT_SURVEY.metric}", ${window.CLALIT_SURVEY.period}. מרפאה בלי נתון סקר מקבלת ציון ממוצע. נבדקות ${PRIMARY_POOL} המרפאות הקרובות, ומוצגות ${PRIMARY_SHOW} עם הציון המשוקלל הגבוה. מקורות: `,
         U.srcLink('yahalom', 'סקר יהלום'), ' · ', U.srcLink('osrm', 'OSRM')));
   }
 
