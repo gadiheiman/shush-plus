@@ -2,7 +2,7 @@
 .view-head { display: grid; gap: 6px; }
 .view-head h1 { font: 400 clamp(26px, 3.4vw, 36px)/1.2 var(--f-display); }
 .lead { color: var(--muted); max-width: 65ch; font-size: 17px; }
-.kicker { font-size: 13px; font-weight: 700; letter-spacing: .02em; color: var(--view-accent); }
+.kicker { font-size: 13px; font-weight: 700; letter-spacing: .02em; color: var(--view-ink); }
 .sec-title { font: 400 22px/1.3 var(--f-display); }
 .fine { font-size: 13px; color: var(--muted); }
 .empty { color: var(--muted); padding: 20px; text-align: center; }
@@ -18,7 +18,7 @@
 .btn-primary { background: var(--view-accent); color: var(--on-accent); }
 .btn-primary:hover { filter: brightness(1.08); }
 .btn-ghost { background: var(--surface); color: var(--ink-text); border-color: var(--line); }
-.btn-ghost:hover { border-color: var(--view-accent); color: var(--view-accent); }
+.btn-ghost:hover { border-color: var(--view-accent); color: var(--view-ink); }
 .btn-sm { padding: 6px 12px; font-size: 14px; border-radius: 10px; }
 .icon-btn { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 15px; padding: 4px 8px; border-radius: 8px; }
 .icon-btn:hover { background: var(--surface-2); color: var(--hot); }
@@ -38,8 +38,8 @@
 .card h3 { font: 700 15px/1.3 var(--f-body); color: var(--muted); }
 
 .pill { display: inline-block; max-width: 100%; padding: 3px 12px; border-radius: 999px; font-size: 13px; font-weight: 700; overflow-wrap: anywhere; }
-.pill-hot { background: color-mix(in srgb, var(--hot) 15%, transparent); color: var(--hot); }
-.pill-warm { background: color-mix(in srgb, var(--warm) 20%, transparent); color: color-mix(in srgb, var(--warm) 70%, var(--ink-text)); }
+.pill-hot { background: color-mix(in srgb, var(--hot) 15%, transparent); color: color-mix(in srgb, var(--hot) 80%, var(--ink-text)); }
+.pill-warm { background: color-mix(in srgb, var(--warm) 20%, transparent); color: color-mix(in srgb, var(--warm) 50%, var(--ink-text)); }
 .pill-cool { background: color-mix(in srgb, var(--cool) 22%, transparent); color: var(--muted); }
 
 .controls { display: flex; flex-wrap: wrap; gap: 16px 24px; align-items: end; }
@@ -68,7 +68,7 @@
 .bar i { display: block; height: 100%; background: var(--cool); border-radius: 99px; }
 .bar-val { font-variant-numeric: tabular-nums; min-width: 4ch; text-align: start; }
 .bar-us .bar i { background: var(--view-accent); }
-.bar-us .bar-label, .bar-us .bar-val { color: var(--view-accent); font-weight: 700; }
+.bar-us .bar-label, .bar-us .bar-val { color: var(--view-ink); font-weight: 700; }
 
 .tbl-wrap { overflow-x: auto; }
 .tbl { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; font-size: 15px; }
@@ -95,7 +95,7 @@ details > summary { cursor: pointer; }
 }
 .ac-list[hidden] { display: none; }
 .ac-opt { padding: 10px 12px; border-radius: 10px; cursor: pointer; font-size: 15px; }
-.ac-opt b { color: var(--view-accent); }
+.ac-opt b { color: var(--view-ink); }
 .ac-opt:hover, .ac-opt[aria-selected="true"] { background: color-mix(in srgb, var(--view-accent) 12%, var(--surface)); }
 @media (max-width: 900px) { .ac-opt { padding: 12px; font-size: 16px; } }
 
@@ -107,8 +107,17 @@ details > summary { cursor: pointer; }
 @media (max-width: 700px) { .search-row { flex-basis: 100%; } .search-btns { flex: 1 1 100%; } .search-btns .btn { flex: 1; } }
 
 /* שם קופה לחיץ שפותח חלון פירוט */
-.fund-link { justify-self: start; padding: 0; border: 0; background: none; cursor: pointer; font: 700 17px/1.2 var(--f-body); color: var(--view-accent); text-decoration: underline dotted; text-underline-offset: 4px; }
+.fund-link { justify-self: start; padding: 0; border: 0; background: none; cursor: pointer; font: 700 17px/1.2 var(--f-body); color: var(--view-ink); text-decoration: underline dotted; text-underline-offset: 4px; }
 .fund-link:hover { text-decoration-style: solid; }
 
 /* טקסט לקוראי מסך בלבד */
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* ---- גודל מטרות מגע (נגישות): לפחות 44px לכפתורים.
+   לקישורים בתוך טקסט – מרחיבים את אזור הלחיצה בריפוד ומקזזים בשוליים שליליים, כך שהפריסה לא זזה ---- */
+.btn-sm { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.icon-btn { min-width: 44px; min-height: 44px; display: inline-grid; place-items: center; }
+.gs-open, .sheet-close { width: 44px !important; height: 44px !important; }
+.sources summary, .u-group summary, .u-list summary, .f-note summary, .doc-more summary, .rules summary, .rules-box summary { padding-block: 11px !important; }
+.src, .fund-link, button.unit-name, .sources ol a { display: inline-block; padding-block: 11px; margin-block: -11px; }
+.sources ol a { padding-block: 8px; margin-block: -8px; }

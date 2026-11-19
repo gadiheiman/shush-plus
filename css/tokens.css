@@ -9,19 +9,20 @@
   --line: #d8e1ee;
 
   --blue: #0b5ed7;
-  --teal: #0aa39a;
-  --coral: #f2643d;
+  --teal: #077a73;   /* כהה יותר לניגודיות 4.5:1 */
+  --coral: #b74b2e;
   --violet: #6d4cf0;
   --sun: #f0a500;
-  --mint: #12a86b;
-  --pink: #d63c86;
+  --mint: #0d7d50;
+  --pink: #c03578;
   --ink: #1d2c55;
 
-  --hot: #e0412f;
+  --hot: #c73929;
   --warm: #f0a500;
   --cool: #8ea2c4;
 
   --view-accent: var(--blue);
+  --view-ink: color-mix(in srgb, var(--blue) 80%, var(--ink-text));   /* טקסט בצבע ההדגשה – נקבע לכל מסך ב-router.js */
   --on-accent: #ffffff;
 
   --f-display: "Secular One", "Rubik", "Arial Hebrew", sans-serif;

@@ -18,6 +18,8 @@
     DOM.clear(host);
     host.dataset.view = v.id;
     document.documentElement.style.setProperty('--view-accent', `var(--${v.color})`);
+    // צבע טקסט כהה יותר מצבע ההדגשה, לניגודיות 4.5:1 (הצהוב צריך הכהיה חזקה יותר)
+    document.documentElement.style.setProperty('--view-ink', `color-mix(in srgb, var(--${v.color}) ${v.color === 'sun' ? 55 : 80}%, var(--ink-text))`);
     v.render(host);
     document.querySelectorAll('[data-nav]').forEach((a) => a.setAttribute('aria-current', a.dataset.nav === v.id ? 'page' : 'false'));
     host.focus({ preventScroll: true });
