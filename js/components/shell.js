@@ -101,6 +101,7 @@
         h('a', { class: 'brand', href: '#clinic', 'aria-label': 'שו״ש פלוס – למסך הראשי' },
           Logo.mark(40),
           h('div', null, h('strong', null, 'שו״ש פלוס'), h('small', null, 'כללית · שירות · שימור · גיוס'))),
+        GlobalSearch.render(),
         countdownChip()),
       h('div', { class: 'layout' }, nav(), h('div', { class: 'content' }, main, sources())),
       h('div', { class: 'sheet-backdrop', 'aria-hidden': 'true', onclick: Drawer.close }),

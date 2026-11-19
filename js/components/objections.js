@@ -31,13 +31,13 @@
    * @param {{id, title, icon, color, section, kicker, head, lead, items:()=>Array, rules?:()=>Array, byFund?:boolean}} cfg
    */
   function makeView(cfg) {
-    const local = { q: '', tag: 'הכול', open: false };
+    const local = { q: '', tag: 'הכול', open: false, focus: null };   // focus: התנגדות שנבחרה בחיפוש הכללי
 
     /** סינון לפי חיפוש, תגית וקופה */
     function filtered() {
       const fund = Store.get('fund'), q = local.q.trim();
       return cfg.items().filter((o) =>
-        (!cfg.byFund || !o.fund || o.fund === fund || fund === 'unk') &&
+        (!cfg.byFund || !o.fund || o.fund === fund || fund === 'unk' || o.says === local.focus) &&
         (local.tag === 'הכול' || o.tag === local.tag) &&
         (!q || (o.says + o.ans + (o.ask || '')).includes(q)));
     }
@@ -45,19 +45,22 @@
     Router.register({
       id: cfg.id, title: cfg.title, icon: cfg.icon, color: cfg.color,
       render(el) {
+        // הגעה מהחיפוש הכללי: מסננים להתנגדות שנבחרה ופותחים אותה
+        const f = Store.get('objFocus');
+        if (f && f.view === cfg.id) { local.q = f.says; local.tag = 'הכול'; local.focus = f.says; Store.set({ objFocus: null }); }
         const list = h('div', { class: 'obj-list' });
         const draw = () => {
           const items = filtered();
-          DOM.clear(list).append(...(items.length ? items.map((o) => objCard(o, local.open, cfg.id)) : [h('p', { class: 'empty' }, '🔎 לא נמצאה התנגדות כזו. נסו מילה אחרת.')]));
+          DOM.clear(list).append(...(items.length ? items.map((o) => objCard(o, local.open || o.says === local.focus, cfg.id)) : [h('p', { class: 'empty' }, '🔎 לא נמצאה התנגדות כזו. נסו מילה אחרת.')]));
         };
         const rerender = () => { DOM.clear(el); this.render(el); };
         const tags = ['הכול', ...new Set(cfg.items().map((o) => o.tag))].map((t) => ({ id: t, name: t }));
         const sid = cfg.id + '-search';
         const count = h('p', { class: 'fine' });
-        const apply = (q) => { local.q = q; draw(); count.textContent = `${filtered().length} התנגדויות · לחיצה על כרטיס פותחת את התשובה`; };
+        const apply = (q) => { local.q = q; if (q !== local.focus) local.focus = null; draw(); count.textContent = `${filtered().length} התנגדויות · לחיצה על כרטיס פותחת את התשובה`; };
         const { form: searchForm, input: search } = UI.searchRow({
           id: sid, label: '🔍 חיפוש', placeholder: 'מה המבוטח אמר? למשל: תור, מחיר, אפליקציה', value: local.q,
-          onSearch: apply, onReset: () => { local.q = ''; local.tag = 'הכול'; rerender(); }
+          onSearch: apply, onReset: () => { local.q = ''; local.tag = 'הכול'; local.focus = null; rerender(); }
         });
         // סינון חי בזמן הקלדה + השלמה אוטומטית מתוך משפטי המבוטחים
         search.addEventListener('input', () => apply(search.value.trim()));
